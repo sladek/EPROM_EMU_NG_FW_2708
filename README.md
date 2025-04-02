@@ -32,8 +32,6 @@ When software is flashed to Arduino, we can connect the emulator to SBC. Below i
 
 <img title="" src="pictures/EMU_PMI-80.jpg" alt="" width="291">
 
-
-
 EMU_NG connected to PMI-80
 
 I've also included an example of source code that I used for testing the emulator. It is a slightly modified version of the example from the [PMI-80 replica](https://github.com/TomasPavlovicPavlo/PMI-80). The modified example is [here](examples).
