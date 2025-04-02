@@ -39,4 +39,4 @@ Two extra cables on the upper part of the picture are RESET and /RESET that can 
 
 <img title="" src="../pictures/Test_clips.jpg" alt="" width="83"> 
 
-and then attached to the RESET pin of the SBC.
+And then attached to the RESET pin of the SBC.
