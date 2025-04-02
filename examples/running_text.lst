@@ -1,0 +1,120 @@
+
+Assembly Listing                                                                                                 Page: 1
+------------------------------------------------------------------------------------------------------------------------
+
+                            1 |         ; 8080 assembler code
+                            2 |         ;.project running_text.com
+                            3 | 
+                            4 | temp1   equ     1C60h
+                            5 | temp2   equ     1C61h
+                            6 | 
+                            7 | CLEAR   equ     00ABh
+                            8 | DISP    equ     0140h
+                            9 | OUTKE2  equ     011Ch
+                           10 | 
+                           11 | ; character codes
+                           12 | _A      equ     0Ah
+                           13 | _B      equ     0Bh
+                           14 | _C      equ     0Ch
+                           15 | _D      equ     0Dh
+                           16 | _E      equ     0Eh
+                           17 | _F      equ     0Fh
+                           18 | _G      equ     20h
+                           19 | _H      equ     1Ah
+                           20 | _I      equ     01h
+                           21 | _J      equ     21h
+                           22 | _K      equ     85h
+                           23 | _L      equ     14h
+                           24 | _M      equ     16h
+                           25 | _N      equ     1Bh
+                           26 | _O      equ     11h
+                           27 | _P      equ     13h
+                           28 | _Q      equ     43h
+                           29 | _R      equ     12h
+                           30 | _S      equ     05h
+                           31 | _T      equ     10h
+                           32 | _U      equ     15h
+                           33 | _V      equ     8Eh
+                           34 | _W      equ     15h
+                           35 | _X      equ     9Bh
+                           36 | _Y      equ     23h
+                           37 | _Z      equ     02h
+                           38 | _equal  equ     18h     ; =
+                           39 | _minus  equ     1Fh     ; -
+                           40 | _apostr equ     1Eh     ; "
+                           41 | _comma  equ     22h     ; ,
+                           42 | _qstn   equ     1Dh     ; ?
+                           43 | _1      equ     01h
+                           44 | _2      equ     02h
+                           45 | _3      equ     03h
+                           46 | _4      equ     04h
+                           47 | _5      equ     05h
+                           48 | _6      equ     06h
+                           49 | _7      equ     07h
+                           50 | _8      equ     08h
+                           51 | _9      equ     09h
+                           52 | _0      equ     00h
+                           53 | _space  equ     19h
+                           54 | 
+                           55 | 
+                           56 |         .org 0400h       ; Start in second EPROM position of PMI-80
+
+
+Assembly Listing                                                                                                 Page: 2
+------------------------------------------------------------------------------------------------------------------------
+
+0400: 3E 19                57 |         MVI A,_space     ; move space to A
+0402: CD AB 00             58 |         CALL CLEAR       ; call subroutine CLEAR from MONITOR
+0405: 3E 00                59 |         MVI A,00h        ; Register A = 00
+0407: 32 60 1C             60 |         STA temp1        ; save A to 1C60
+                           61 | loop1:       
+040A: CD 24 04             62 |         CALL loop2       ; 
+040D: 3A 60 1C             63 |         LDA temp1        ; save value from 1C60 to A
+0410: 6F                   64 |         MOV L,A          ; move A to L
+0411: 26 05                65 |         MVI H, HIGH(txt) ; upper part of address of rolling text
+0413: 22 FC 1F             66 |         SHLD 1FFCh       ; save value from HL to 1FFC
+0416: 3C                   67 |         INR A            ; A++
+0417: FE 24                68 |         CPI 24h          ; is A = 24 ?
+0419: C2 1E 04             69 |         JNZ loop7        ; if Z = 0 then jump
+041C: 3E 00                70 |         MVI A,00h        ; else A = 00
+                           71 | loop7:
+041E: 32 60 1C             72 |         STA temp1        ; store A to 1C60
+0421: C3 0A 04             73 |         JMP loop1        ; jump to start
+                           74 | loop2:       
+0424: 3E 00                75 |         MVI A,00h        ; A = 00
+0426: 32 61 1C             76 |         STA temp2        ; 1C61 = A
+                           77 | loop6:       
+0429: 3A 61 1C             78 |         LDA temp2        ; A = 1C61
+042C: 47                   79 |         MOV B,A          ; B = A
+042D: 3E 00                80 |         MVI A,00h        ; A = 00
+                           81 | loop3:       
+042F: 3C                   82 |         INR A            ; A++
+0430: FE 00                83 |         CPI 00h          ; is A = 00 ?
+0432: C2 2F 04             84 |         JNZ loop3        ; if Z = 0 then jump
+0435: 78                   85 |         MOV A,B          ; else A = B
+0436: 3C                   86 |         INR A            ; A++
+0437: FE 40                87 |         CPI 40h          ; is A = 40 ?
+0439: 32 61 1C             88 |         STA temp2        ; 1C61 = A
+043C: C2 40 04             89 |         JNZ loop4        ; if Z = 0 then jump
+043F: C9                   90 |         RET              ; else return to main loop
+                           91 | loop4:       
+0440: CD 40 01             92 |         CALL DISP        ; call subroutine DISP from MONITOR
+0443: DA 49 04             93 |         JC loop5         ; if C = 1 then jump to loop5
+0446: C3 29 04             94 |         JMP loop6        ; else jump to loop6
+                           95 | loop5:       
+0449: CD 1C 01             96 |         CALL OUTKE2      ; call subroutine OUTKE2 from MONITOR
+044C: FE 97                97 |         CPI 97h          ; is A = 97 ? (key „BR“)
+044E: C2 29 04             98 |         JNZ loop6        ; if Z = 0 then jump to loop6
+0451: C3 00 00             99 |         JMP 0000h        ; else jump to 0000 (reset)
+                          100 | 
+                          101 | 
+                          102 | 
+                          103 |         .org 500h
+                          104 | txt:
+0500: 1A 0E 14 14 11...   105 |         db _H,_E,_L,_L,_O,_space,_W,_O,_R,_L,_D,_space
+050C: 1A 0E 14 14 11...   106 |         db _H,_E,_L,_L,_O,_space,_W,_O,_R,_L,_D,_space
+0518: 1A 0E 14 14 11...   107 |         db _H,_E,_L,_L,_O,_space,_W,_O,_R,_L,_D,_space
+0524: 1A 0E 14 14 11...   108 |         db _H,_E,_L,_L,_O,_space,_W,_O,_R,_L,_D,_space
+                          109 | 
+                          110 |         
+
